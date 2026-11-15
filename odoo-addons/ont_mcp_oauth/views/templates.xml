@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Self-contained per-scope consent screen. Deliberately NOT built on
+         web.login_layout: the website module (if installed) overrides that
+         template with a website-request context we don't have, and a minimal
+         standalone page avoids any theming/CSP coupling. -->
+    <template id="consent" name="Authorize AI Access">
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Authorize access</title>
+                <link rel="stylesheet" type="text/css" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+            </head>
+            <body class="bg-light">
+                <div class="container" style="max-width: 26rem; margin-top: 4rem;">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h4 class="text-center mb-3">Authorize access</h4>
+                            <p class="text-center text-muted">
+                                <strong><t t-esc="client_name"/></strong>
+                                wants to access your Odoo account.
+                            </p>
+                            <form role="form" action="/mcp/oauth/authorize" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="csrf_token"/>
+                                <input type="hidden" name="req" t-att-value="req_token"/>
+                                <div class="mb-3">
+                                    <div class="fw-bold small text-muted mb-1">PERMISSIONS</div>
+                                    <div class="form-check" t-if="scope_read">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="scope_read" id="scope_read" checked="checked"/>
+                                        <label class="form-check-label" for="scope_read">
+                                            <code>mcp:read</code> — read via MCP tools
+                                        </label>
+                                    </div>
+                                    <div class="form-check" t-if="scope_write">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="scope_write" id="scope_write" checked="checked"/>
+                                        <label class="form-check-label" for="scope_write">
+                                            <code>mcp:write</code> — write via MCP tools
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="text-muted small mb-3">
+                                    Redirects to <span t-esc="redirect_uri"/>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" name="action" value="approve"
+                                            class="btn btn-primary">Approve</button>
+                                    <button type="submit" name="action" value="deny"
+                                            class="btn btn-link">Deny</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <p class="text-center text-muted small mt-3">Powered by Ontash</p>
+                </div>
+            </body>
+        </html>
+    </template>
+
+</odoo>

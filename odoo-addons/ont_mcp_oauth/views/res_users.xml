@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Administrator view of any user's connections (Settings > Users). -->
+    <record id="view_users_form_oauth_consents" model="ir.ui.view">
+        <field name="name">res.users.form.oauth.consents</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="AI Connections" name="oauth_connections">
+                    <field name="oauth_consent_ids" readonly="1">
+                        <tree>
+                            <field name="client_id"/>
+                            <field name="scope_read"/>
+                            <field name="scope_write"/>
+                            <field name="last_used"/>
+                            <button name="action_revoke" type="object" string="Revoke"
+                                    icon="fa-trash" class="btn-link"
+                                    confirm="Revoke this AI connection and all its active tokens?"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Self-service: the same panel in Preferences, so a user can revoke a
+         compromised AI connector without waiting for an administrator. The
+         consent record rule ([('user_id','=',user.id)], read+unlink) already
+         scopes this to the user's own grants. -->
+    <record id="view_users_preferences_oauth_consents" model="ir.ui.view">
+        <field name="name">res.users.preferences.oauth.consents</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="AI Connections" name="oauth_connections">
+                    <field name="oauth_consent_ids" readonly="1">
+                        <tree create="false" edit="false">
+                            <field name="client_id"/>
+                            <field name="scope_read"/>
+                            <field name="scope_write"/>
+                            <field name="last_used"/>
+                            <button name="action_revoke" type="object" string="Revoke"
+                                    icon="fa-trash" class="btn-link"
+                                    confirm="Revoke this AI connection and all its active tokens?"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_connect_form_oauth" model="ir.ui.view">
+        <field name="name">muk_mcp.connect.form.oauth</field>
+        <field name="model">muk_mcp.connect</field>
+        <field name="inherit_id" ref="muk_mcp.view_connect_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Rewrite the intro to explain the OAuth vs bearer-key split. -->
+            <xpath expr="//div[hasclass('oe_title')]/p" position="replace">
+                <p class="text-muted">
+                    Pick the AI client you want to use.
+                    Public-internet clients (ChatGPT.com, Claude.ai) connect via
+                    OAuth automatically — no key to copy.
+                    Local clients (Claude Code, Claude Desktop, Codex CLI, Cursor,
+                    OpenCode) need a bearer key.
+                </p>
+            </xpath>
+
+            <!-- Put the OAuth clients first, before the local-client tabs. -->
+            <xpath expr="//page[@name='claude_code']" position="before">
+                <page string="ChatGPT.com" name="oauth_chatgpt">
+                    <field name="oauth_base_is_https" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="oauth_base_is_https">
+                        Your base URL is not HTTPS. Public AI clients require an HTTPS endpoint.
+                    </div>
+                    <p>Connect via OAuth 2.1 — no bearer key needed.</p>
+                    <ol>
+                        <li>Settings → Apps → enable <b>Developer mode</b>.</li>
+                        <li>Create app → <b>Custom MCP</b>.</li>
+                        <li>Server URL: <field name="oauth_server_url" readonly="1" nolabel="1"/></li>
+                        <li>Auth: <b>OAuth 2.1</b> (auto-discovered).</li>
+                        <li>Connect → sign in to Odoo → approve.</li>
+                        <li>Open the app → Refresh to load the tools.</li>
+                    </ol>
+                    <p class="text-muted">
+                        Requires either an OAuth Client registered in Settings → MCP → OAuth Clients,
+                        or Dynamic Client Registration enabled in MCP settings.
+                    </p>
+                </page>
+                <page string="Claude.ai" name="oauth_claude">
+                    <div class="alert alert-warning" role="alert"
+                         invisible="oauth_base_is_https">
+                        Your base URL is not HTTPS. Public AI clients require an HTTPS endpoint.
+                    </div>
+                    <p>Connect via OAuth — auto-discovered.</p>
+                    <ol>
+                        <li>Settings → Connectors → Custom Connectors → Add custom connector.</li>
+                        <li>Remote MCP URL: <field name="oauth_server_url" readonly="1" nolabel="1"/></li>
+                        <li>Auth: <b>OAuth</b> (auto-discovered).</li>
+                        <li>Sign in to Odoo → approve scopes.</li>
+                    </ol>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

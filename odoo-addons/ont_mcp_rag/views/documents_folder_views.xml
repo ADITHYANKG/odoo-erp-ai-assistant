@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Odoo 17 keeps folders as a separate model (documents.folder) with a
+        classic form view, so the opt-in checkbox sits directly on the
+        workspace form. A small technical list under Settings > Technical
+        stays as a one-screen overview: every folder, one editable checkbox,
+        and how many chunks each currently has indexed.
+    -->
+    <record id="view_ont_rag_folder_form" model="ir.ui.view">
+        <field name="name">documents.folder.rag.form</field>
+        <field name="model">documents.folder</field>
+        <field name="inherit_id" ref="documents.folder_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_folder_id']" position="after">
+                <field name="ont_rag_indexed"/>
+                <field name="ont_rag_chunk_count" invisible="not ont_rag_indexed"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_ont_rag_folder_list" model="ir.ui.view">
+        <field name="name">documents.folder.rag.list</field>
+        <field name="model">documents.folder</field>
+        <field name="arch" type="xml">
+            <tree string="AI-Searchable Folders" editable="bottom" create="0" delete="0">
+                <field name="name" string="Folder" readonly="1"/>
+                <field name="parent_folder_id" string="Parent" readonly="1"/>
+                <field name="ont_rag_indexed" string="Searchable by AI"/>
+                <field name="ont_rag_chunk_count" string="Indexed passages" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_ont_rag_folders" model="ir.actions.act_window">
+        <field name="name">AI Document Search</field>
+        <field name="res_model">documents.folder</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_ont_rag_folder_list"/>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No document folders yet</p>
+            <p>
+                Tick "Searchable by AI" on a folder and its documents are
+                chunked, embedded and made answerable by the assistant.
+                Indexing runs on a schedule, so a newly uploaded file
+                becomes searchable within a few minutes with no further
+                action.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_ont_rag_folders"
+              name="AI Document Search"
+              parent="base.menu_custom"
+              action="action_ont_rag_folders"
+              sequence="95"/>
+</odoo>

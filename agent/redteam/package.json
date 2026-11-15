@@ -1,0 +1,13 @@
+{
+  "name": "erp-ai-redteam",
+  "private": true,
+  "description": "Pinned Promptfoo for the agent red team (see promptfooconfig.yaml).",
+  "scripts": {
+    "redteam": "promptfoo redteam run -c promptfooconfig.yaml -o output/results.json",
+    "injection": "promptfoo eval -c injection.yaml -o output/injection.json",
+    "view": "promptfoo view"
+  },
+  "devDependencies": {
+    "promptfoo": "0.120.27"
+  }
+}

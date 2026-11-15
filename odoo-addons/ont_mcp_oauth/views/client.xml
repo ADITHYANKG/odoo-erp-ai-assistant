@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ont_mcp_oauth_client_list" model="ir.ui.view">
+        <field name="name">ont_mcp_oauth.client.list</field>
+        <field name="model">ont_mcp_oauth.client</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="client_type"/>
+                <field name="scope"/>
+                <field name="dcr"/>
+                <field name="last_used"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ont_mcp_oauth_client_form" model="ir.ui.view">
+        <field name="name">ont_mcp_oauth.client.form</field>
+        <field name="model">ont_mcp_oauth.client</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_regenerate_secret" type="object"
+                            string="Regenerate Secret" class="btn-secondary"
+                            invisible="client_type != 'confidential'"
+                            confirm="Generate a new secret? Any client still using the old one will stop working."/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="client_type != 'confidential' or has_secret">
+                        This confidential client has <strong>no secret</strong> and cannot
+                        obtain a token. Use <strong>Regenerate Secret</strong> above.
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Claude.ai"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="client_id" readonly="1"/>
+                            <field name="client_type"/>
+                            <field name="has_secret" invisible="client_type != 'confidential'"/>
+                            <field name="scope"/>
+                            <field name="allow_refresh"/>
+                            <field name="rate_limit"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="dcr" readonly="1"/>
+                            <field name="dcr_ip" readonly="1" invisible="not dcr"/>
+                            <field name="last_used" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Redirect URIs">
+                        <field name="redirect_uris" nolabel="1"
+                               placeholder="https://claude.ai/api/mcp/auth_callback"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ont_mcp_oauth_client" model="ir.actions.act_window">
+        <field name="name">OAuth Clients</field>
+        <field name="res_model">ont_mcp_oauth.client</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_ont_mcp_oauth_clients"
+        name="OAuth Clients"
+        parent="muk_mcp.menu_mcp_root"
+        action="action_ont_mcp_oauth_client"
+        sequence="60"/>
+
+</odoo>

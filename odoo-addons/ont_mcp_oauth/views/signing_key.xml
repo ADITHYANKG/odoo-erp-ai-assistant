@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ont_mcp_oauth_signing_key_list" model="ir.ui.view">
+        <field name="name">ont_mcp_oauth.signing.key.list</field>
+        <field name="model">ont_mcp_oauth.signing.key</field>
+        <field name="arch" type="xml">
+            <!-- delete="false": deletion must go through Revoke Now, which
+                 refuses to remove the active key. -->
+            <tree create="false" edit="false" delete="false"
+                  decoration-muted="not active" decoration-bf="active">
+                <field name="kid"/>
+                <field name="active" string="Signing"/>
+                <field name="create_date"/>
+                <field name="retire_until"/>
+                <button name="action_revoke_now" type="object"
+                        string="Revoke Now" icon="fa-ban" class="btn-link"
+                        invisible="active"
+                        confirm="Delete this retired key immediately? Every access token it signed stops working at once. Do this only if the private key may have leaked."/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ont_mcp_oauth_signing_key_form" model="ir.ui.view">
+        <field name="name">ont_mcp_oauth.signing.key.form</field>
+        <field name="model">ont_mcp_oauth.signing.key</field>
+        <field name="arch" type="xml">
+            <form create="false" delete="false">
+                <header>
+                    <button name="action_rotate" type="object" class="btn-primary"
+                            string="Rotate Key" invisible="not active"
+                            confirm="Start signing with a new key? The current key keeps verifying existing tokens until it expires."/>
+                    <button name="action_revoke_now" type="object" class="btn-danger"
+                            string="Revoke Now" invisible="active"
+                            confirm="Delete this retired key immediately? Every access token it signed stops working at once. Do this only if the private key may have leaked."/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="not active">
+                        This is the <strong>active</strong> signing key. Rotating retires it
+                        gracefully — it keeps verifying tokens it already signed until the
+                        access-token lifetime runs out.
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="active">
+                        This key is <strong>retired</strong>. It still verifies tokens it signed
+                        until <em>Valid Until</em>, then is deleted automatically. If the private
+                        key may have leaked, use <strong>Revoke Now</strong> instead of waiting.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="kid"/>
+                            <!-- Read-only: retirement is one-way. The model
+                                 refuses reactivation too, since the cog menu
+                                 offers Unarchive regardless of the view. -->
+                            <field name="active" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="retire_until" invisible="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ont_mcp_oauth_signing_key" model="ir.actions.act_window">
+        <field name="name">OAuth Signing Keys</field>
+        <field name="res_model">ont_mcp_oauth.signing.key</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No signing key yet</p>
+            <p>A key is generated automatically the first time an OAuth token is issued.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_ont_mcp_oauth_signing_keys"
+        name="OAuth Signing Keys"
+        parent="muk_mcp.menu_mcp_root"
+        action="action_ont_mcp_oauth_signing_key"
+        groups="base.group_system"
+        sequence="61"/>
+
+</odoo>

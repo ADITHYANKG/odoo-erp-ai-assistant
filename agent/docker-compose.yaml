@@ -1,0 +1,66 @@
+# The agent's own datastore.
+#
+# Deliberately NOT the Odoo Postgres server and NOT the root compose file:
+# the agent is a standalone service, and some clients run Odoo Online or
+# odoo.sh where creating a database on their server is not an option. Keeping
+# it here also means `docker compose down` on the Odoo stack cannot take
+# conversation memory with it.
+#
+# When the bot itself is containerised, its service joins this file — this
+# directory is the unit that ships.
+
+# Pinned: volume agent_ont-agent-db-17-data predates the repo split.
+name: agent
+
+services:
+  db:
+    # The same image Odoo uses. pgvector is required: long-term preferences
+    # are embedded and searched by similarity.
+    image: pgvector/pgvector:pg15
+    container_name: ont-agent-db-17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ont_agent
+      POSTGRES_USER: ont_agent
+      # Overridable, but this database is not published beyond localhost.
+      POSTGRES_PASSWORD: ${AGENT_DB_PASSWORD:-ont_agent}
+    ports:
+      # 5564 is Odoo's Postgres, 5433 is Langfuse's. Bound to localhost so the
+      # agent's state is never reachable from the network.
+      - "127.0.0.1:5566:5432"
+    volumes:
+      # A named volume, not a bind mount: this is the agent's own state and
+      # should survive `docker compose down` without leaving a directory in
+      # the repository.
+      - ont-agent-db-17-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ont_agent -d ont_agent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build: .
+    image: ont-agent:local
+    container_name: ont-agent-bot
+    restart: unless-stopped
+    # Opt-in so local dev can keep running the bot with `uv run ont-agent-bot`.
+    profiles: ["bot"]
+    env_file: .env
+    environment:
+      AGENT_DB_URL: postgresql://ont_agent:${AGENT_DB_PASSWORD:-ont_agent}@db:5432/ont_agent
+      # Odoo runs on the host (odoo stack); override for production.
+      MCP_URL: ${MCP_URL_FROM_CONTAINER:-http://host.docker.internal:8069/mcp}
+    ports:
+      - "127.0.0.1:8181:8181"
+    volumes:
+      - ont-agent-bot-data:/app/data
+      # Google Chat service-account key; GOOGLE_CHAT_CREDENTIALS_FILE=secrets/<file>.json
+      - ./secrets:/app/secrets:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  ont-agent-db-17-data:
+  ont-agent-bot-data:

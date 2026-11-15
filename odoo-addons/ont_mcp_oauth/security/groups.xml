@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Gates the mcp:write OAuth scope per USER: only members may ever be
+         granted write, regardless of what the client requests or the client's
+         own scope ceiling allows. Administrators receive it automatically via
+         the implication below; grant it individually to trusted executives
+         who should write through the agent without being administrators. -->
+    <record id="group_mcp_write" model="res.groups">
+        <field name="name">MCP: Allow Write</field>
+        <field name="comment">Members may be granted the mcp:write OAuth scope
+(write access through the Model Context Protocol endpoint). Everyone else is
+silently limited to mcp:read — the consent screen does not even offer write.</field>
+    </record>
+
+    <!-- Gates the call_method MCP tool per USER: call_method can invoke any
+         public method on an allowed model (confirm orders, approve leave,
+         register payments) — the widest write surface. Only members may use
+         it; everyone else gets a server-side denial even with write scope. -->
+    <record id="group_mcp_method_call" model="res.groups">
+        <field name="name">MCP: Allow Method Calls</field>
+        <field name="comment">Members may use the call_method MCP tool (invoke
+business-action methods such as confirming orders through the Model Context
+Protocol endpoint). Non-members are denied server-side even if they hold the
+mcp:write scope.</field>
+    </record>
+
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('ont_mcp_oauth.group_mcp_write')), (4, ref('ont_mcp_oauth.group_mcp_method_call'))]"/>
+    </record>
+</odoo>

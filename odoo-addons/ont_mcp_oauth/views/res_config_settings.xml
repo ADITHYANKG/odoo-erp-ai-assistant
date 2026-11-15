@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_res_config_settings_form" model="ir.ui.view">
+        <field name="name">ont_mcp_oauth.res.config.settings.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="muk_mcp.view_res_config_settings_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Own top-level block, sibling to "MCP Server" / "MCP Extensions". -->
+            <xpath expr="//block[@name='mcp_settings']" position="after">
+                <block title="MCP OAuth" name="ont_mcp_oauth_settings">
+                    <field name="oauth_base_url_frozen" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="oauth_base_url_frozen">
+                        <strong>The base URL is not frozen.</strong>
+                        Token issuer, audience and the published OAuth metadata all derive
+                        from <code>web.base.url</code>, which Odoo silently rewrites from the
+                        request host on every administrator login. If it changes, every live
+                        token stops working and the OAuth endpoints are advertised on the new
+                        host.
+                        <button name="action_freeze_base_url" type="object"
+                                string="Freeze Base URL" class="btn-link"
+                                confirm="Pin web.base.url to its current value? Change it manually first if this is not your final public URL."/>
+                    </div>
+                    <setting id="ont_oauth_access_ttl">
+                        <label string="Access Token TTL" for="oauth_access_token_ttl"/>
+                        <div class="text-muted">
+                            Lifetime of issued access tokens before they must be refreshed.
+                        </div>
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <div class="o_light_label">
+                                    <label class="fw-bold col-6 col-sm-4 col-md-2 col-lg-4"
+                                           string="TTL" for="oauth_access_token_ttl"/>
+                                    <field name="oauth_access_token_ttl"
+                                           class="w-25 text-center" nolabel="1"/>
+                                    <span class="col-auto ms-2">in Seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="ont_oauth_refresh_ttl">
+                        <label string="Refresh Token TTL" for="oauth_refresh_token_ttl_days"/>
+                        <div class="text-muted">
+                            Lifetime of refresh tokens before re-authorization is required.
+                        </div>
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <div class="o_light_label">
+                                    <label class="fw-bold col-6 col-sm-4 col-md-2 col-lg-4"
+                                           string="TTL" for="oauth_refresh_token_ttl_days"/>
+                                    <field name="oauth_refresh_token_ttl_days"
+                                           class="w-25 text-center" nolabel="1"/>
+                                    <span class="col-auto ms-2">in Days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="ont_oauth_grace">
+                        <label string="Refresh Grace Window" for="oauth_refresh_grace_seconds"/>
+                        <div class="text-muted">
+                            Window allowing a just-rotated refresh token to be replayed
+                            without revoking the chain.
+                        </div>
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <div class="o_light_label">
+                                    <label class="fw-bold col-6 col-sm-4 col-md-2 col-lg-4"
+                                           string="Grace" for="oauth_refresh_grace_seconds"/>
+                                    <field name="oauth_refresh_grace_seconds"
+                                           class="w-25 text-center" nolabel="1"/>
+                                    <span class="col-auto ms-2">in Seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="ont_oauth_dcr">
+                        <label string="Dynamic Client Registration" for="oauth_dcr_enabled"/>
+                        <div class="text-muted">
+                            Allow MCP clients to self-register via RFC 7591.
+                        </div>
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <div class="o_light_label">
+                                    <field name="oauth_dcr_enabled" nolabel="1"/>
+                                    <button
+                                        name="%(action_ont_mcp_oauth_client)d"
+                                        type="action"
+                                        string="Manage OAuth Clients"
+                                        icon="oi-arrow-right"
+                                        class="btn-link ms-2"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+
+            <!-- Drop MuK's paid-module installer: this addon provides the feature,
+                 and installing muk_mcp_oauth would claim the same /mcp/oauth/* routes. -->
+
+        </field>
+    </record>
+
+</odoo>

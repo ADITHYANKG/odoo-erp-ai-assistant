@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="param_access_token_ttl" model="ir.config_parameter">
+        <field name="key">ont_mcp_oauth.access_token_ttl</field>
+        <field name="value">900</field>
+    </record>
+
+    <record id="param_refresh_token_ttl_days" model="ir.config_parameter">
+        <field name="key">ont_mcp_oauth.refresh_token_ttl_days</field>
+        <field name="value">30</field>
+    </record>
+
+    <record id="param_refresh_grace_seconds" model="ir.config_parameter">
+        <field name="key">ont_mcp_oauth.refresh_grace_seconds</field>
+        <field name="value">30</field>
+    </record>
+
+    <record id="param_dcr_enabled" model="ir.config_parameter">
+        <field name="key">ont_mcp_oauth.dcr_enabled</field>
+        <field name="value">False</field>
+    </record>
+
+</odoo>

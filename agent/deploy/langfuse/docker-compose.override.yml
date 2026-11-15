@@ -1,0 +1,19 @@
+# Local additions on top of Langfuse's official docker-compose.yml.
+#
+# Copy next to that file (/opt/langfuse on the server); compose picks it up
+# automatically. See deploy/langfuse/README.md.
+
+name: langfuse
+
+services:
+  langfuse-web:
+    environment:
+      # Only the headless-init admin (LANGFUSE_INIT_USER_*) can log in.
+      AUTH_DISABLE_SIGNUP: "true"
+    ports:
+      # Appended to the official 127.0.0.1:3000 binding. The docker0 bridge
+      # address is reachable from every container on the host but not from
+      # the network, so the bot container uses
+      # LANGFUSE_BASE_URL=http://172.17.0.1:3000 with no change to its own
+      # compose file — a redeploy cannot cut it off from Langfuse.
+      - 172.17.0.1:3000:3000

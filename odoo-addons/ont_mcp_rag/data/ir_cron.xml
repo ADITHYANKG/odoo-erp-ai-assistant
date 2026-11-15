@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Scheduled rather than triggered on upload: a slow or failing
+        embedding provider must never block someone saving a file, and an
+        outage should retry itself instead of losing documents. Ten minutes
+        is frequent enough that "upload it and ask about it" feels immediate
+        without polling an idle database all day.
+    -->
+    <record id="ir_cron_ont_rag_index" model="ir.cron">
+        <field name="name">Index documents for AI search</field>
+        <field name="model_id" ref="model_ont_document_chunk"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_index_documents()</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

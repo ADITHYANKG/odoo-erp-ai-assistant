@@ -1,0 +1,85 @@
+[project]
+name = "ont-agent"
+version = "0.1.0"
+description = "Acme AI-over-ERP agent: Telegram + LLM (OpenRouter) client for Odoo's MCP endpoint"
+readme = "README.md"
+authors = [
+    { name = "Subin" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp>=3.14.3",
+    "fastapi==0.141.1",
+    "fastembed>=0.8.1",
+    "fpdf2>=2.8.8",
+    "httpx>=0.28.1",
+    "kaleido>=1.3.0",
+    "langchain>=1.3.15",
+    "langchain-mcp-adapters>=0.3.2",
+    "langchain-openrouter>=0.2.8",
+    "langfuse>=4.14.4",
+    "langgraph>=1.2.11",
+    "langgraph-checkpoint-postgres>=3.1.2",
+    "langmem>=0.0.30",
+    "plotly>=6.9.0",
+    "psycopg[binary,pool]>=3.3.5",
+    "pydantic>=2.12",
+    "pyjwt[crypto]>=2.9",
+    "python-dotenv>=1.2.2",
+    "python-telegram-bot>=22.8",
+    "semantic-router>=0.1.16",
+    "sentry-sdk>=2.30",
+    "slack-sdk>=3.45.0",
+    "tzdata>=2026.3",
+    "uvicorn>=0.52.3",
+]
+
+[project.scripts]
+ont-agent-list-tools = "ont_agent.mcp_client:main"
+ont-agent-chat = "ont_agent.chat:main"
+ont-agent-bot = "ont_agent.bot:main"
+ont-agent-latency = "ont_agent.metrics:main"
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 99
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import ordering)
+    "UP",  # pyupgrade (modern syntax)
+    "B",   # bugbear (likely bugs)
+    "SIM", # simplify
+    "C4",  # comprehensions
+    "RUF", # ruff-specific
+]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+# Plotly ships no py.typed marker; scope the exemption to it alone.
+module = "plotly.*"
+ignore_missing_imports = true

@@ -1,0 +1,8 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_ont_mcp_oauth_signing_key_admin,ont_mcp_oauth.signing.key.admin,model_ont_mcp_oauth_signing_key,base.group_system,1,1,1,1
+access_ont_mcp_oauth_client_admin,ont_mcp_oauth.client.admin,model_ont_mcp_oauth_client,base.group_system,1,1,1,1
+access_ont_mcp_oauth_code_admin,ont_mcp_oauth.code.admin,model_ont_mcp_oauth_code,base.group_system,1,1,1,1
+access_ont_mcp_oauth_token_admin,ont_mcp_oauth.token.admin,model_ont_mcp_oauth_token,base.group_system,1,1,1,1
+access_ont_mcp_oauth_authrequest_admin,ont_mcp_oauth.authrequest.admin,model_ont_mcp_oauth_authrequest,base.group_system,1,1,1,1
+access_ont_mcp_oauth_consent_admin,ont_mcp_oauth.consent.admin,model_ont_mcp_oauth_consent,base.group_system,1,1,1,1
+access_ont_mcp_oauth_consent_user,ont_mcp_oauth.consent.user,model_ont_mcp_oauth_consent,base.group_user,1,0,0,1
