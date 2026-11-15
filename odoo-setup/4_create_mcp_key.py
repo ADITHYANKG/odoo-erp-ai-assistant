@@ -5,7 +5,7 @@ MCP_BEARER_KEY. The key belongs to the JSON-RPC user from .env (admin for
 now); per-executive OAuth tokens replace this in the Telegram phase.
 
 Usage:
-    ./venv/Scripts/python experiments/4_create_mcp_key.py [--name NAME] [--scope read|write]
+    uv run --project agent python odoo-setup/4_create_mcp_key.py [--name NAME] [--scope read|write]
 """
 import argparse
 import os

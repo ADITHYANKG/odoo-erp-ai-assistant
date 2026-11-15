@@ -12,7 +12,7 @@ IMPORTANT: refresh tokens can never WIDEN scope, so anyone already logged in
 through Telegram keeps read-only tokens until they /logout and /start again.
 
 Usage:
-    ./venv/Scripts/python experiments/6_enable_agent_writes.py
+    uv run --project agent python odoo-setup/6_enable_agent_writes.py
 """
 
 import os

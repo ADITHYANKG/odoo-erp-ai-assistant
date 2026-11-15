@@ -17,9 +17,9 @@ workers serving the OLD value, which makes the database and the actual
 endpoint disagree.
 
 Usage:
-    ./venv/Scripts/python experiments/3_set_public_base_url.py https://new-name.trycloudflare.com
-    ./venv/Scripts/python experiments/3_set_public_base_url.py --unfreeze
-    ./venv/Scripts/python experiments/3_set_public_base_url.py --show
+    uv run --project agent python odoo-setup/3_set_public_base_url.py https://new-name.trycloudflare.com
+    uv run --project agent python odoo-setup/3_set_public_base_url.py --unfreeze
+    uv run --project agent python odoo-setup/3_set_public_base_url.py --show
 """
 import os
 import subprocess

@@ -1,0 +1,59 @@
+# Odoo 17 Community + Postgres, with the MCP addons from odoo-addons/ installed.
+#
+#   docker compose up -d        # first start creates the database and installs the addons
+#   open http://localhost:8069  # login admin / admin (change it!)
+#
+# The bot (agent/) has its own compose file for its own Postgres; this one is
+# only Odoo. Settings below can be overridden in a .env file next to this one.
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${ODOO_DB_PASSWORD:-odoo}
+      POSTGRES_DB: postgres
+    volumes:
+      - odoo-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  # One-shot: creates the database on the first run and installs (or, on later
+  # runs, leaves alone) the MCP addons. Finishes before Odoo starts.
+  odoo-init:
+    image: odoo:17
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &odoo-env
+      HOST: db
+      USER: odoo
+      PASSWORD: ${ODOO_DB_PASSWORD:-odoo}
+    command: >
+      odoo -d ${ODOO_DB:-odoo}
+      -i ${ODOO_MODULES:-muk_mcp_access,ont_mcp_oauth,ont_mcp_mail,ont_mcp_fieldguard,ont_mcp_trace,contacts}
+      --stop-after-init
+    volumes: &odoo-volumes
+      - ./odoo-addons:/mnt/extra-addons
+      - odoo-data:/var/lib/odoo
+    restart: "no"
+
+  odoo:
+    image: odoo:17
+    depends_on:
+      odoo-init:
+        condition: service_completed_successfully
+    environment: *odoo-env
+    command: odoo -d ${ODOO_DB:-odoo} --db-filter=^${ODOO_DB:-odoo}$$
+    ports:
+      - "127.0.0.1:${ODOO_PORT:-8069}:8069"
+    volumes: *odoo-volumes
+    restart: unless-stopped
+
+volumes:
+  odoo-db:
+  odoo-data:

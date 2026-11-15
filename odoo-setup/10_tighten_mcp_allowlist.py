@@ -26,7 +26,7 @@ record with sudo() inside ont_mcp_mail and never consults the allowlist.
 Idempotent: already-correct entries are reported and left untouched.
 
 Usage:
-    ./venv/Scripts/python experiments/10_tighten_mcp_allowlist.py
+    uv run --project agent python odoo-setup/10_tighten_mcp_allowlist.py
 """
 
 import os

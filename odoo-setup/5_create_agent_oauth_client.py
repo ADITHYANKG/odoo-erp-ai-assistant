@@ -5,7 +5,7 @@ public client (PKCE, no secret), read-only scope ceiling, refresh allowed.
 Re-running updates the redirect URI instead of duplicating the client.
 
 Usage:
-    ./venv/Scripts/python experiments/5_create_agent_oauth_client.py \
+    uv run --project agent python odoo-setup/5_create_agent_oauth_client.py \
         [--public-url http://localhost:8181]
 
 Copy the printed client_id into agent/.env as OAUTH_CLIENT_ID.

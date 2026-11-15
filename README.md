@@ -27,9 +27,45 @@ The agent is built on LangGraph with models from OpenRouter. It reaches Odoo onl
 
 ## Quick start
 
-1. Add `odoo-addons/` to your Odoo 17 `addons_path` and install the `ont_mcp_*` modules (their dependencies, including `muk_mcp`, install automatically).
-2. Run the setup scripts in `odoo-setup/` (in number order 3 → 6) against your Odoo, and copy the printed values into `agent/.env`.
-3. In `agent/`: `cp .env.example .env`, fill it in, then `uv sync` and `uv run python -m ont_agent` (see `agent/README.md` for details).
+You need Git, Docker, Python 3.13+ and [uv](https://docs.astral.sh/uv/), plus an [OpenRouter](https://openrouter.ai) API key and a Telegram bot token from @BotFather.
+
+### 1. Start Odoo
+
+```bash
+docker compose up -d
+```
+
+This starts Odoo 17 Community and Postgres, creates a database called `odoo` and installs the MCP modules from `odoo-addons/`. The first start takes a few minutes. Then open <http://localhost:8069> and log in as `admin` / `admin` (change the password).
+
+Settings you can override in a `.env` file next to `docker-compose.yml`: `ODOO_PORT` (default `8069`), `ODOO_DB` (`odoo`), `ODOO_DB_PASSWORD` (`odoo`) and `ODOO_MODULES` (the modules to install).
+
+> **Community vs Enterprise:** `ont_mcp_rag` (searching policy documents) needs Odoo Enterprise's `documents` module, so it isn't installed by default. Everything else works on Community. With an Enterprise licence, use your own Enterprise image and add `ont_mcp_rag` to `ODOO_MODULES`.
+
+To use an Odoo you already run instead, add `odoo-addons/` to its `addons_path` and install the same modules.
+
+### 2. Connect the agent to Odoo
+
+```bash
+cd agent && uv sync && cd ..
+cp odoo-setup/.env.example odoo-setup/.env      # Odoo login for the scripts
+
+uv run --project agent python odoo-setup/4_create_mcp_key.py            # prints MCP_BEARER_KEY
+uv run --project agent python odoo-setup/5_create_agent_oauth_client.py # prints OAUTH_CLIENT_ID
+uv run --project agent python odoo-setup/6_enable_agent_writes.py       # optional: lets the bot write
+```
+
+`3_set_public_base_url.py` is only needed when Odoo is reached through a public URL (a tunnel or a server).
+
+### 3. Start the bot
+
+```bash
+cd agent
+cp .env.example .env    # fill in TELEGRAM_BOT_TOKEN, OPENROUTER_API_KEY, MCP_BEARER_KEY, OAUTH_CLIENT_ID
+docker compose up -d db # the bot's own Postgres
+uv run ont-agent-bot
+```
+
+Message your bot on Telegram and send `/start` to log in to Odoo. See [`agent/README.md`](agent/README.md) for everything else.
 
 ## Optional: tracing and error tracking
 
