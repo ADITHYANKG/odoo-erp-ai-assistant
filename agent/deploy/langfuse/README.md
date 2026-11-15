@@ -9,7 +9,7 @@ the Docker bridge address, so any redeploy of the bot keeps tracing.
 | Directory | `/opt/langfuse` (official `docker-compose.yml` + the files here) |
 | UI / API | `127.0.0.1:3000` on the host, `172.17.0.1:3000` from containers |
 | Bot setting | `LANGFUSE_BASE_URL="http://172.17.0.1:3000"` in the bot's `.env` |
-| Project | org `Acme`, project `agent/` (created on first boot) |
+| Project | org `Acme`, project `odoo-erp-ai-assistant` (created on first boot) |
 
 All other ports (Postgres, ClickHouse, Redis, MinIO, worker) are bound to
 `127.0.0.1` only. Signup is disabled; the only login is the init admin.
