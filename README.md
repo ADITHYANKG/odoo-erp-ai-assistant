@@ -31,6 +31,17 @@ The agent is built on LangGraph with models from OpenRouter. It reaches Odoo onl
 2. Run the setup scripts in `odoo-setup/` (in number order 3 → 6) against your Odoo, and copy the printed values into `agent/.env`.
 3. In `agent/`: `cp .env.example .env`, fill it in, then `uv sync` and `uv run python -m ont_agent` (see `agent/README.md` for details).
 
+## Optional: tracing and error tracking
+
+The bot runs without either of these. Each one switches on only when its settings in `agent/.env` are filled in.
+
+| Tool | What it gives you | Settings | Setup guide |
+|---|---|---|---|
+| [Langfuse](https://langfuse.com) | A trace of every conversation turn (model calls, tool calls, cost, latency), plus 👍/👎 feedback as scores | `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` | [agent/deploy/langfuse/](agent/deploy/langfuse/README.md) |
+| [Sentry](https://sentry.io) | An issue with a traceback for every error the bot logs | `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` | [agent/deploy/sentry/](agent/deploy/sentry/README.md) |
+
+Both can be self-hosted on the same server as the bot, or used as hosted services (Langfuse Cloud, sentry.io). Personal data is stripped before anything is sent to Sentry; see the Sentry guide for details.
+
 ## Licence
 
 The Odoo modules are LGPL-3, as stated in each `__manifest__.py`.
